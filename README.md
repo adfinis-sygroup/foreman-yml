@@ -15,7 +15,7 @@ sudo pip install .
 ## Usage
 
 ```
-foreman-yml /path/to/config.yaml
+foreman-yml [import|dump|cleanup] /path/to/config.yaml
 ```
 
 
@@ -23,6 +23,38 @@ foreman-yml /path/to/config.yaml
 
 Root node of YAML is always `foreman`.
 You can find an configuration example under `config/example.yml`
+
+### Dump current configuration
+
+foreman-yml supports dumping the whole configuration of a remote foreman instance
+to sdout. Use `foreman-yml dump` for this feauture.
+
+For dumping, provide an config file with auth settings:
+```yaml
+foreman:
+  auth:
+    url: "https://foreman.lab.local"
+    user: username
+    pass: password
+```
+
+Then run foreman-yml like this to dump configuration:
+```
+foreman-yml dump /path/to/config.yml > foreman_dump.yml
+```
+
+
+### Import settings into foreman
+
+If no keyword or `import` is provided to `foreman-yml`, the script tries
+to import settings provided by yaml-file.
+
+```
+foreman-yml /path/to/config.yml
+foreman-yml dump /path/to/config.yml
+```
+
+The following config sections are supported:
 
 
 #### Section `auth`
@@ -287,6 +319,37 @@ hostgroup:
 - __parameters__            Dict of params
   -__keyname__              Value of param
 
+#### Section `host`
+```yaml
+host:
+  - name: testhost
+    domain: lab.local
+    architecture: x86_64
+    hostgroup: switzerland
+    environment: production
+    os: Ubuntu 14.04 LTS
+    media: Ubuntu Mirror
+    partition: Ubuntu Default
+    model: VMWare VM
+    mac: 00:11:22:33:44:55
+    root-pass: supersecret42
+    parameters:
+      env: prod
+      kernel_params: quiet
+```
+- __name__                  Host name
+- __domain__                Domain name, maps to `domain.name`
+- __architecture__          Architecture name, maps to `architecture.name`
+- __hostgroup__             Hostgroup name, maps to `hostgroup.name`
+- __environment__           Environment name, maps to `environment.name`
+- __os__                    Operating system name, maps to `os.name`
+- __media__                 Media name, maps to `medium.name`
+- __partition__             Ptable name, maps to `partition.name`
+- __model__                 Hardware model name, maps to `model.name`
+- __mac__                   MAC address
+- __root-pass__             Root password
+- __parameters__            Dict of params
+  - __keyname__              Value of param
 
 #### Section `roles`
 ```yaml
@@ -403,7 +466,14 @@ auth-source-ldap:
 
 
 
+### Cleanup (delete) settings
 
+If the keyword `cleanup` is provided to foreman-yml, it will try to delete
+items specified by its name.
+
+```
+foreman-yml cleanup /path/to/config.yml
+```
 
 #### Section `cleanup-[architecture|compute-profile|partition-table|provisioning-template]`
 ```yaml

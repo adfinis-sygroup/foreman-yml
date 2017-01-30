@@ -515,6 +515,22 @@ foreman:
         foo: bar
         bar: baz
 
+  host:
+    - name: testhost
+      domain: lab.local
+      architecture: x86_64
+      hostgroup: switzerland
+      environment: production
+      os: Ubuntu 14.04 LTS
+      media: Ubuntu Mirror
+      partition: Ubuntu Default
+      model: Virtual Machine
+      mac: 00:11:22:33:44:55
+      root-pass: supersecret42
+      parameters:
+        foo: bar
+        bar: baz
+
   roles:
     - name: fooo
       permissions:

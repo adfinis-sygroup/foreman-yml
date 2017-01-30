@@ -191,9 +191,9 @@ class ForemanDump(foremanclient.ForemanBase):
                 if (setting == "name"):
                     os_tpl['name'] = value
                 if (setting == "major"):
-                    os_tpl['major'] = int(value)
+                    os_tpl['major'] = str(value)
                 if (setting == "minor"):
-                    os_tpl['minor'] = int(value)
+                    os_tpl['minor'] = str(value)
                 if (setting == "description"):
                     os_tpl['description'] = value
                 if (setting == "release_name"):
@@ -343,11 +343,11 @@ class ForemanDump(foremanclient.ForemanBase):
                 pass
 
             # domains
-            subnet_tpl['domains'] = []
+            subnet_tpl['domain'] = []
 
             all_doms = self.fm.subnets.domains_index(dd['id'])
             for dom in all_doms['results']:
-                subnet_tpl['domains'].append(dom['name'])
+                subnet_tpl['domain'].append(dom['name'])
 
             ret.append(subnet_tpl)
 

@@ -8,7 +8,7 @@ import log
 import foremanclient
 from pprint import pprint
 from foreman.client import Foreman, ForemanException
-
+from voluptuous import MultipleInvalid
 
 
 
@@ -381,10 +381,10 @@ class ForemanImport(foremanclient.ForemanBase):
                 log.log(log.LOG_WARN, "Cannot resolve Provisioning template '{0}' ".format(pt['name']) )
                 continue
 
-            try:
-                linklist = pt['template-combination-attribute']
-            except KeyError:
+            if 'template_combination_attribute' not in pt or pt['template-combination-attribute'] is None:
                 continue
+            else:
+                linklist = pt['template-combination-attribute']
 
             for item in linklist:
                 env_id = False
@@ -737,21 +737,24 @@ class ForemanImport(foremanclient.ForemanBase):
                 log.log(log.LOG_INFO, "Create Host '{0}'".format(hostname))
 
                 fmh = self.fm.hosts.create( host = host_tpl )
-                fixif = {
-                    'id':           fmh['interfaces'][0]['id'],
-                    'managed':      'false',
-                    'primary':      'true',
-                    'provision':    'true'
-                }
-                fixhost = {
-                    'interfaces_attributes':        [ fixif ],
-                    'host_parameters_attributes':   host_params
-                }
                 try:
-                    self.fm.hosts.update(fixhost, fmh['id'])
-                    return fmh
+                    fixif = {
+                        'id':           fmh['interfaces'][0]['id'],
+                        'managed':      'false',
+                        'primary':      'true',
+                        'provision':    'true'
+                    }
+                    fixhost = {
+                        'interfaces_attributes':        [ fixif ],
+                        'host_parameters_attributes':   host_params
+                    }
+                    try:
+                        self.fm.hosts.update(fixhost, fmh['id'])
+                        return fmh
+                    except:
+                        log.log(log.LOG_DEBUG, "An Error Occured when linking Host '{0}' (non-fatal)".format(hostc['name']))
                 except:
-                    log.log(log.LOG_DEBUG, "An Error Occured when linking Host '{0}' (non-fatal)".format(hostc['name']))
+                    pass
 
     # roles
     def process_roles(self):
